@@ -12,21 +12,51 @@
 3) Updated App content to demonstrate the problem
 
 ### Note:
+
+By default, Shop Mini's KAV component uses `'padding'` for iOS behaviour, and `undefined` for Android:
+
+via `.../node_modules/@shopify/shop-minis-platform-sdk/src/components/KeyboardAvoidingView.tsx`
+```
+...
+import {
+  ...
+  KeyboardAvoidingView as RNKeyboardAvoidingView,
+  ...
+} from 'react-native'
+...
+export const KeyboardAvoidingView = ({
+  ...
+}: KeyboardAvoidingViewProps) => {
+  ...
+  return (
+    <View
+      ...
+    >
+      <RNKeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+...
+```
+
+Where React Native seems to suggest using `'height'` on Android, which you can see in the code on [this page](https://reactnative.dev/docs/keyboardavoidingview).
+
+In this demo, the [following code](https://github.com/FytechCorp/shop-mini-android-keyboardavoidingview-bg/blob/9cf77cf91e3863c270df72dd95ad28f555c0c135/src/App.tsx#L17-L18) lets a Shop Mini toggle between `undefined` and `'height'` for Android, and the video below demonstrates their differences
+
 ```
 <KeyboardAvoidingView
   behavior={Platform.OS === 'ios' ? 'padding' : behaviourHeight ? 'height' : undefined}
   ...
 />
 ```
-with `behaviourHeight == false` should be equivalent to just having
+
+When so when `behaviourHeight == false` (which the demo starts off with) should be equivalent to just having
+
 ```
 <KeyboardAvoidingView
   ...
 />
 ```
-Which should be how the KAV works on Android by default. 
 
-You can also remove `behaviour=...` in the code, and see the same issue
+Which should be how the KAV works on Android by default in Shop Minis. You can also remove `behaviour=...` in the code, and see the same issues persist.
 
 ## Video demonstrating the problem
 
@@ -35,8 +65,10 @@ You can also remove `behaviour=...` in the code, and see the same issue
 ### Steps:
 - Use link to get into Shop Mini
 - Click TextField
+    - Same behaviour as how Shop Mini's work by default
     - KAV doesn't change the screen
 - Minimize keyboard using the keyboard's down-chevron in the bottom left
 - Toggle KAV behaviour using top Shop Mini ToggleBotton
 - Click TextField
+    - Using `'height'` over `undefined`
     - KAV moves content, but still has minor overlap
